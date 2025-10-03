@@ -3,23 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Picture Details</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        .delete-btn {
+            margin-top: 20px;
+            padding: 8px 16px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .delete-btn:hover {
+            background-color: #c0392b;
+        }
+    </style>
 </head>
 <body>
-    
-    <a href="/">Главная</a>
+    <div id="app">
+        <a href="/">Главная</a>
 
-    <h2>Status __ .Status __</h2>
+        <h2>Status: {{ status }}</h2>
 
-    <img src="__ .FilePath __">
+        <img :src="filePath" :alt="`Изображение: ${status}`">
 
-    <br><br><br>
-    
-    <h4>Миниатюра</h4>
-    <img src="__ .ThumbnailPath __" alt="Миниатюры пока что нет">
-    <br><br><br>
+        <br><br><br>
 
-    <p>Info: __ .Info __</p>
+        <h4>Миниатюра</h4>
+        <img :src="thumbnailPath" alt="Миниатюра">
 
+        <br><br><br>
+
+        <p>Info: {{ info }}</p>
+
+        <br>
+
+        <button class="delete-btn" @click="deletePicture">Удалить изображение</button>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    status: '__ .Status __',
+                    filePath: '__ .FilePath __',
+                    thumbnailPath: '__ .ThumbnailPath __',
+                    info: '__ .Info __'
+                };
+            },
+            methods: {
+                async deletePicture() {
+                    if (!confirm('Вы уверены, что хотите удалить это изображение?')) {
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch(window.location.href, {
+                            method: 'DELETE',
+                            headers: {
+                                'Accept': 'application/json'
+                            }
+                        });
+
+                        if (response.ok) {
+                            alert('Изображение успешно удалено!');
+                            window.location.href = '/';
+                        } else {
+                            alert('Ошибка при удалении: ' + response.status);
+                        }
+                    } catch (error) {
+                        console.error('Ошибка:', error);
+                        alert('Не удалось удалить изображение. Проверьте соединение.');
+                    }
+                }
+            }
+        }).mount('#app');
+    </script>
 </body>
 </html>
