@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue File Upload</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+    <div id="app">
+        <a href="/">main page</a>
+        <br>
+        
+        <form @submit.prevent="submitForm">
+            <input type="file" @change="selectedFile = $event.target.files[0]">
+            <button type="submit" :disabled="!selectedFile || loading">
+                {{ loading ? 'Sending...' : 'Send' }}
+            </button>
+        </form>
+
+        <div v-if="response">
+            <div v-if="response.status === 'OK'" style="color: green;">
+                Success! ID: {{ response.result }}
+            </div>
+            <div v-else style="color: red;">
+                Error: {{ response.error }}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp, ref } = Vue;
+        
+        createApp({
+            setup() {
+                const selectedFile = ref(null);
+                const response = ref(null);
+                const loading = ref(false);
+                
+                const submitForm = async () => {
+                    loading.value = true;
+                    response.value = null;
+                    
+                    try {
+                        const formData = new FormData();
+                        formData.append('image', selectedFile.value);
+                        
+                        const res = await fetch('/upload', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        response.value = await res.json();
+                        
+                    } catch (error) {
+                        response.value = {
+                            status: 'ERROR',
+                            error: 'Upload failed'
+                        };
+                    }
+                    
+                    loading.value = false;
+                };
+                
+                return {
+                    selectedFile,
+                    response,
+                    loading,
+                    submitForm
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>

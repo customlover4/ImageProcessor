@@ -1,0 +1,29 @@
+FROM golang:1.24.6-alpine AS builder
+
+
+WORKDIR /app
+
+# Копируем файлы зависимостей и скачиваем их
+COPY ./go.mod ./go.sum ./
+RUN go mod download
+
+# Копируем исходный код
+COPY . .
+
+# Собираем приложение
+RUN CGO_ENABLED=0 GOOS=linux go build cmd/app/main.go cmd/app/env.go
+
+# Финальный образ
+FROM debian:latest
+
+WORKDIR /app
+
+# Копируем собранный бинарник
+COPY --from=builder /app/main .
+COPY --from=builder /app/templates ./templates
+COPY --from=builder /app/pictures ./pictures
+COPY --from=builder /app/processed_pictures ./processed_pictures
+
+EXPOSE 8080
+
+CMD ["./main"]
