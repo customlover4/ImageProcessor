@@ -5,7 +5,7 @@
 
 ### command for start up
 ```
-git clone https://github.com/customlover4/CommentTree.git CommentTree && cd CommentTree && cd docker && docker-compose build && docker-compose up
+git clone https://github.com/customlover4/ImageProcessor.git ImageProcessor && cd ImageProcessor && cd docker && docker-compose build && docker-compose up
 ```
 
 ### steps for start up
